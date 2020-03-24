@@ -44,23 +44,29 @@ def laskoFanInfrared():
     cpx.red_led = False
     pulseIn.resume()  # resumes IR detection
 
+fanOn = False
+maxTemp = 80
+
 while True:
-    maxTemp = 80
-    while cpx.touch_A7:
+    if cpx.touch_A7:
         maxTemp = 75
-    while cpx.touch_A6:
+    if cpx.touch_A6:
         maxTemp = 70
-    while cpx.touch_A5:
+    if cpx.touch_A5:
         maxTemp = 65
+    if cpx.touch_A4:
+        maxTemp = 80
     cpx.pixels.brightness = 0.3
     temp_f = int(cpx.temperature * (9 / 5) + 32)
-    if temp_f >= maxTemp:
-        print("It's", temp_f, "Too hot! Lower it to under", maxTemp, "!!")
+    print(temp_f, maxTemp)
+    if temp_f >= maxTemp and not fanOn:
+        print("It's", temp_f, ". Too hot! It's", maxTemp, ". Turning fan on now.")
         laskoFanInfrared()
+        fanOn = True
         cpx.pixels.fill((0, 255, 255))
-    if temp_f <= maxTemp-1:
+    if temp_f < maxTemp and fanOn:
         print("Not too hot!")
-        laskoFanInfrared()
         cpx.pixels.fill((0, 0, 0))
+        laskoFanInfrared()
+        fanOn = False
     time.sleep(10)
-
