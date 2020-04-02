@@ -1,4 +1,4 @@
-from adafruit_circuitplayground.express import cpx
+from adafruit_circuitplayground import cp
 import board
 import time
 import pulseio
@@ -37,11 +37,11 @@ pulseArrayFan = array.array('H', [1296, 377, 1289, 384, 464, 1219, 1296, 379,
 
 def laskoFanInfrared():
     pulseIn.pause()  # pauses IR detection
-    cpx.red_led = True
+    cp.red_led = True
     pulseOut.send(pulseArrayFan)  # sends IR pulse
     time.sleep(0.2)  # wait so pulses don't run together
     pulseIn.clear()  # clear detected pulses to remove partial artifacts
-    cpx.red_led = False
+    cp.red_led = False
     pulseIn.resume()  # resumes IR detection
 
 fanOn = False
@@ -49,40 +49,39 @@ maxTemp = 70
 feature = True
 
 while True:
-    if cpx.button_b:
+    if cp.button_b:
         print("Button B Pressed!")
         if feature:
             feature = False
         else:
             feature = True
     while True and feature:
-        if cpx.touch_A4:
+        if cp.touch_A4:
             maxTemp = 60
-        if cpx.touch_A5:
+        if cp.touch_A5:
             maxTemp = 70
-        if cpx.touch_A6:
+        if cp.touch_A6:
             maxTemp = 80
-        cpx.pixels.brightness = 0.3
-        temp_f = int(cpx.temperature * (9 / 5) + 32)
+        cp.pixels.brightness = 0.3
+        temp_f = int(cp.temperature * (9 / 5) + 32)
         print(temp_f, maxTemp)
         if temp_f >= maxTemp and not fanOn:
             print("It's", temp_f, ". Too hot! It's", maxTemp, ". Turning fan on now.")
             laskoFanInfrared()
             fanOn = True
-            cpx.pixels.fill((0, 30, 30))
+            cp.pixels.fill((0, 30, 30))
         if temp_f < maxTemp and fanOn:
             print("Not too hot!")
-            cpx.pixels.fill((0, 0, 0))
+            cp.pixels.fill((0, 0, 0))
             laskoFanInfrared()
             fanOn = False
-        if cpx.button_b:
+        if cp.button_b:
             print("Turning off.")
             if fanOn:
-                cpx.pixels.fill((0, 0, 0))
+                cp.pixels.fill((0, 0, 0))
                 laskoFanInfrared()
                 fanOn = False
             time.sleep(5)
             feature = False
             break
         time.sleep(0.5)
-
